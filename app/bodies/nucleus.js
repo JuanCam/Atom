@@ -2,16 +2,18 @@
     var Nucleus, NucleusGroup;
     Nucleus = function() {
 
+        this.side = 0;
+        this.top = 0;
+        this.decide = 0;
     };
-    Nucleus.prototype.nucleonPosition = function() {
-
+    Nucleus.prototype.placeNucleons = function() {
         Bread.forEach(this, function(nucleon) {
             nucleon.place();
         });
     };
     NucleusGroup = Bread.augment(Bread.Group, [Nucleus]);
 
-    window.nucleus = function() {
+    w.nucleus = function() {
         return new NucleusGroup();
     };
 })(window);

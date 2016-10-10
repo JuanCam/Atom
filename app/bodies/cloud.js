@@ -1,4 +1,5 @@
 (function(w) {
+
     var Cloud, CloudGroup;
     Cloud = function() {
 
@@ -11,9 +12,15 @@
             this[e].collide(elec);
             e++;
         }
-    };
+    }
+    Cloud.prototype.placeElectrons = function() {
+        Bread.forEach(this, function(electron) {
+            electron.place();
+        });
+    }
     CloudGroup = Bread.augment(Bread.Group, [Cloud]);
-    window.cloud = function() {
+    w.cloud = function() {
         return new CloudGroup();
     };
+
 })(window);
