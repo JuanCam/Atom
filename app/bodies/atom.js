@@ -6,57 +6,82 @@
         return;
     }
 
-    Atom = function() {
-
+    Atom = function(attrs) {
+        this.nucleusSize = attrs.nucleusSize || 1;
+        this.nucleonSize = attrs.nucleonSize || 1;
+        this.size = attrs.size || 1;
+        this.cloudSize = attrs.cloudSize;
+        this.nucleus = createNucleus.call(this);
+        this.cloud = createElectrons.call(this, this.cloudSize);
+        this.nOrbits = attrs.orbits;
+        this.orbits = [];
+        this.cloudFlow();
+        this.nucleus.nucleonPosition();
     };
 
     Atom.prototype = {
-        init: function(attrs) {
-            this.nucelusSize = attrs.nucelusSize || 1;
-            this.size = attrs.size || 1;
-            this.cloud = attrs.cloud;
-            this.nucleus = createNucleus.call(this);
-            this.electrons = createElectrons.call(this, this.cloud)
-        },
         attach: function(universe) {
             universe.addIt(this.nucleus);
-            universe.addGroup(this.electrons);
+            universe.addGroup(this.cloud);
+            universe.addGroup(this.nucleus);
         },
         render: function() {
             this.nucleus.render();
-            this.electrons.render();
+            this.cloud.render();
+            this.cloud.move();
+            this.cloud.collide();
         },
         cloudFlow: function() {
-            Bread.forEach(this.electrons, function(electron) {
-                electron.place();
+            var atom = this;
+            Bread.forEach(this.cloud, function(electron) {
+                electron.place(atom);
             });
         }
     }
 
     function createElectrons(n) {
-        var electrons, e, size, x, y;
+        var eGroup, e, size, x, y;
         e = 0;
-        electrons = [];
-        size = this.nucelusSize * this.size;
-
+        size = (this.nucleusSize / 2) * this.size * this.nucleonSize;
+        eGroup = cloud();
         while (e < n) {
-            electrons.push(electronFac({
+            eGroup.push(electronFac({
                 x: this.x - size,
                 y: this.y,
-                atomSize: size,
-                size: 3
+                atom: this
             }));
             e++;
         }
-        return Bread.group(electrons);
+        return eGroup;
     }
 
     function createNucleus() {
-        return Bread.circle({
-            x: this.x,
-            y: this.y,
-            radius: this.nucelusSize
-        });
+        var nucle, n;
+        nucle = window.nucleus();
+        n = 0;
+        while (n < this.nucleusSize) {
+            nucle.push(nucleonFac({
+                x: this.x,
+                y: this.y,
+                size: this.nucleonSize,
+                atom: this
+            }));
+            n++;
+        }
+        return nucle;
+    }
+
+    function createOrbits() {
+        var nOrbits;
+        nOrbits = 0;
+        while (nOrbits < this.nOrbits) {
+            this.orbits.push(Bread.circle({
+                x: this.x,
+                y: this.y,
+                radius: this.nucleusSize * (5 + nOrbits)
+            }))
+            nOrbits++;
+        }
     }
 
     AtomMix = Bread.augment(Bread.Point, [Atom]);
@@ -64,9 +89,13 @@
     window.atomFac = function(attrs) {
         var atm = new AtomMix({
             x: attrs.x,
-            y: attrs.y
+            y: attrs.y,
+            size: attrs.size,
+            nucleusSize: attrs.nucleusSize,
+            cloudSize: attrs.cloudSize,
+            nucleonSize: attrs.nucleonSize,
+            orbits: attrs.orbits || 1
         });
-        atm.init(attrs);
         return atm;
     }
 
