@@ -8,7 +8,6 @@
 
     Electron = function(attrs) {
         this.atom = attrs.atom;
-        this.atomSize = this.atom.size;
         this.radius = attrs.radius;
         this.fill = attrs.fill;
         this.stroke = attrs.stroke;
@@ -17,18 +16,16 @@
     Electron.prototype = {
         place: function() {
             var size, angle, subsize;
-            size = (this.atom.nucleusSize / 2) * this.atom.size * this.atom.nucleonSize;
+            size = this.atom.atomicRadius;
             angle = Bread.random.rand(0, Math.PI * 2);
-            subsize = Bread.random.rand(0, size);
-            this.x = this.atom.x + subsize * Math.cos(angle);
-            this.y = this.atom.y + subsize * Math.sin(angle);
-            this.angle = angle;
-            this.speed = Bread.random.randomInPortions([-5, -3], [3, 5]);
+            subsize = Bread.random.rand(0, size * 2);
+            this.x = this.x + subsize * Math.cos(angle);
+            this.y = this.y + subsize * Math.sin(angle);
+            this.angle = Bread.random.rand(0, Math.PI * 2);
+            this.speed = Bread.random.randomInPortions([-5, -4.5], [4.5, 5]);
         },
         move: function() {
-            var size;
             Bread.Body.prototype.move.call(this);
-            size = this.atom.nucleusSize * this.atom.size * this.atom.nucleonSize;
             bound.call(this);
         },
         collide: function(electron) {
@@ -41,7 +38,7 @@
     ElectronMix = Bread.augment(Bread.Body, [Bread.Circle, Electron]);
 
     function bound(atom) {
-        var size = this.atom.nucleusSize * this.atom.size * this.atom.nucleonSize;
+        var size = this.atom.atomicRadius * 2;
         if (this.distance(this.atom) > size) impulseElectron.call(this);
     }
 
@@ -51,13 +48,13 @@
         this.impulse(this.speed, 0, angle);
     }
 
-    window.electronFac = function(attrs) {
+    w.electronFac = function(attrs) {
         var elect = new ElectronMix({
             x: attrs.x,
             y: attrs.y,
             radius: attrs.size || 1,
-            fill: '#2eb82e',
-            stroke: '#2eb82e',
+            fill: '#1f7a1f',
+            stroke: '#1f7a1f',
             atom: attrs.atom
         });
         return elect;
