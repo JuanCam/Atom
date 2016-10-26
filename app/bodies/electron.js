@@ -22,7 +22,7 @@
             this.x = this.x + subsize * Math.cos(angle);
             this.y = this.y + subsize * Math.sin(angle);
             this.angle = Bread.random.rand(0, Math.PI * 2);
-            this.speed = Bread.random.randomInPortions([-5, -4.5], [4.5, 5]);
+            this.speed = Bread.random.randomInPortions([-3, -2.5], [2.5, 3]);
         },
         move: function() {
             Bread.Body.prototype.move.call(this);
@@ -53,8 +53,8 @@
             x: attrs.x,
             y: attrs.y,
             radius: attrs.size || 1,
-            fill: '#1f7a1f',
-            stroke: '#1f7a1f',
+            fill: '#ff9999',
+            stroke: '#ff9999',
             atom: attrs.atom
         });
         return elect;
